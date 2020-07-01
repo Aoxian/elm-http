@@ -1,23 +1,41 @@
 module Tests exposing (..)
 
 import Expect
+import Http
+import Main
 import Test exposing (..)
 
 
-
--- Check out https://package.elm-lang.org/packages/elm-explorations/test/latest to learn more about testing in Elm!
-
-
-all : Test
-all =
-    describe "A Test Suite"
-        [ test "Addition" <|
+httpRequestBuilder : Test
+httpRequestBuilder =
+    describe "Building http requests"
+        [ test "GET record for a request" <|
             \_ ->
-                Expect.equal 10 (3 + 7)
-        , test "String.left" <|
+                Expect.equal simpleGetRecord (Main.httpGetRecordBuilder testUrl)
+        , test "GET request directly" <|
             \_ ->
-                Expect.equal "a" (String.left 1 "abcdefg")
-        , test "This test should pass" <|
-            \_ ->
-                Expect.pass
+                Expect.equal simpleGetRequest (Main.httpGetRequestBuilder testUrl)
         ]
+
+
+
+---- CONSTANTS ----
+
+
+simpleGetRecord : { url : String, expect : Http.Expect Main.Msg }
+simpleGetRecord =
+    { url = "https://elm-lang.org/assets/public-opinion.txt"
+    , expect = Http.expectString Main.GotText
+    }
+
+
+simpleGetRequest : Cmd Main.Msg
+simpleGetRequest =
+    Http.get
+        { url = "https://elm-lang.org/assets/public-opinion.txt"
+        , expect = Http.expectString Main.GotText
+        }
+
+
+testUrl =
+    "https://elm-lang.org/assets/public-opinion.txt"
